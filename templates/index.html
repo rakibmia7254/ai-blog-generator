@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Blog Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-900 text-white">
+    <header class="text-gray-400 bg-gray-900 body-font">
+        <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
+          <a class="flex title-font font-medium items-center text-white mb-4 md:mb-0">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-10 h-10 text-white p-2 bg-indigo-500 rounded-full" viewBox="0 0 24 24">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+            </svg>
+            <span class="ml-3 text-xl">Tailblocks</span>
+          </a>
+          <nav class="md:ml-auto flex flex-wrap items-center text-base justify-center">
+            <a class="mr-5 hover:text-white">First Link</a>
+            <a class="mr-5 hover:text-white">Second Link</a>
+            <a class="mr-5 hover:text-white">Third Link</a>
+            <a class="mr-5 hover:text-white">Fourth Link</a>
+          </nav>
+          <button class="inline-flex items-center bg-gray-800 border-0 py-1 px-3 focus:outline-none hover:bg-gray-700 rounded text-base mt-4 md:mt-0">Button
+            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
+              <path d="M5 12h14M12 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </header>
+    <div class="container px-5 text-gray-400 py-5 items-center justify-center">
+        <h1 class="text-3xl font-bold text-gray-300 text-center mb-4">AI Blog Generator</h1>
+        <p class="lg:w-2/3 mx-auto leading-relaxed text-center text-gray-400 text-base">Whatever cardigan tote bag tumblr hexagon brooklyn asymmetrical gentrify.</p>
+        <div class="flex w-64 mx-auto justify-center mt-6">
+        <form id="blogForm" class="mb-4">
+            <label for="title" class="block text-gray-400 font-bold mb-2">Title:</label>
+            <input type="text" id="title" name="title" class="w-full bg-gray-800 bg-opacity-40 rounded border border-gray-700 focus:border-indigo-500 focus:bg-gray-900 focus:ring-2 focus:ring-indigo-900 text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out" required placeholder="Enter blog title">
+            <button type="submit"
+                class="mt-2 px-4 py-2 bg-indigo-500 text-white rounded-md shadow-md transition duration-300 hover:bg-indigo-600">Generate</button>
+        </form>
+        </div>
+        <div id="loader" class="hidden mt-4">
+            <div class="animate-pulse flex space-x-4">
+                <div class="rounded-full bg-gray-800 h-8 w-8"></div>
+                <div class="flex-1 space-y-4 py-1">
+                    <div class="h-4 bg-gray-800 rounded w-3/4"></div>
+                    <div class="space-y-2">
+                        <div class="h-4 bg-gray-800 rounded"></div>
+                        <div class="h-4 bg-gray-800 rounded w-5/6"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="result" class="hidden mt-4 ml-14">
+            <p class="text-gray-300  border border-gray-700" id="blogContent"></p>
+            <button id="copyButton"
+                class="mt-2 px-4 py-2 bg-indigo-500 text-white rounded-md shadow-md transition duration-300 hover:bg-indigo-600">Copy</button>
+        </div>
+    </div>
+
+    <script>
+        const blogForm = document.getElementById('blogForm');
+        const loader = document.getElementById('loader');
+        const result = document.getElementById('result');
+        const blogContent = document.getElementById('blogContent');
+        const copyButton = document.getElementById('copyButton');
+
+        blogForm.addEventListener('submit', async (e) => {
+            result.classList.add('hidden');
+            e.preventDefault();
+            loader.classList.remove('hidden');
+            const formData = new FormData(blogForm);
+            const title = formData.get('title');
+            try {
+                const response = await fetch('/generator', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+                const data = await response.text();
+                // Display result
+                blogContent.textContent = data;
+                result.classList.remove('hidden');
+            } catch (error) {
+                console.error('Error:', error);
+            } finally {
+                loader.classList.add('hidden');
+            }
+        });
+
+        copyButton.addEventListener('click', () => {
+            const textArea = document.createElement('textarea');
+            textArea.value = blogContent.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert('Content copied to clipboard!');
+        });
+    </script>
+</body>
+
+</html>
